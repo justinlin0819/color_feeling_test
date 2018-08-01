@@ -8,8 +8,21 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController,UIPopoverPresentationControllerDelegate {
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let vc = segue.destination
+        vc.preferredContentSize=CGSize(width: 300, height: 50)
+        let controller = vc.popoverPresentationController
+        if controller != nil {
+            controller?.delegate = self
+        }
+    }
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+    
     @IBOutlet var slider_ColorChange: [UISlider]!
     @IBOutlet var stepper_ColorChange: [UIStepper]!
     
@@ -18,6 +31,7 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var label_Question: UILabel!
     @IBOutlet weak var label_Answer: UILabel!
+    @IBOutlet weak var label_StandardAnswer: UILabel!
     
     var red: CGFloat = 0
     var green: CGFloat = 0
@@ -66,27 +80,42 @@ class ViewController: UIViewController {
         question_green = CGFloat(Int.random(in: 0...255))/255
         question_blue = CGFloat(Int.random(in: 0...255))/255
         label_Question.backgroundColor = UIColor(red: question_red, green: question_green, blue: question_blue, alpha: 1)
-        print(question_red * 255)
-        print(question_green * 255)
-        print(question_blue * 255)
+        
+        label_Answer.backgroundColor = UIColor(red: 127/255, green: 127/255, blue: 127/255, alpha: 1)
+        
+        label_RGBValue[0].text = "127"
+        label_RGBValue[1].text = "127"
+        label_RGBValue[2].text = "127"
+        
+        stepper_ColorChange[0].value = 127
+        stepper_ColorChange[1].value = 127
+        stepper_ColorChange[2].value = 127
+        
+        slider_ColorChange[0].value = 127
+        slider_ColorChange[1].value = 127
+        slider_ColorChange[2].value = 127
+        
+        label_StandardAnswer.text = nil
     }
     
     @IBAction func button_Submit(_ sender: Any) {
         if question_red == red && question_green == green && question_blue == blue {
-           print("答對了")
-        }
+            performSegue(withIdentifier: "showpopover_Win", sender: nil)
+            }
+            else {
+            performSegue(withIdentifier: "showpopover_Lose", sender: nil)
+            }
     }
     
     @IBAction func button_NextQuestuon(_ sender: Any) {
-        question_red = CGFloat(Int.random(in: 0...255))/255
-        question_green = CGFloat(Int.random(in: 0...255))/255
-        question_blue = CGFloat(Int.random(in: 0...255))/255
-        label_Question.backgroundColor = UIColor(red: question_red, green: question_green, blue: question_blue, alpha: 1)
+        viewDidLoad()
     }
     
     @IBAction func button_AnnounceAnswer(_ sender: Any) {
-        print(question_red * 255)
-        print(question_green * 255)
-        print(question_blue * 255)
+        label_StandardAnswer.text="""
+                                  R=\(String(Int(question_red * 255)))
+                                  G=\(String(Int(question_green * 255)))
+                                  B=\(String(Int(question_blue * 255)))
+                                  """
     }
 }
